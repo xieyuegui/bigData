@@ -1,0 +1,380 @@
+#app{
+    width: 100vw;
+    min-height: 100vh;
+    background: url(./images/big_bg.png) no-repeat top center;
+    background-size: cover;
+    position: relative;
+}
+#app .map_bg{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+/* 头部 */
+.head_box{
+    /* padding: 10px; */
+	padding: 0.51vw;
+}
+.head_bg{
+    width: 100%;
+    /* height: 72px; */
+    height: 3.75vw;
+    position: relative;
+    background: url(./images/title_bg.png) no-repeat center top;
+    /* background-size: cover; */
+    background-size: 100% 100%;
+    color: #fff;
+}
+.head_bg .head_title img{
+    /* height: 38px; */
+    /* margin-bottom: 16px; */
+    height: 1.98vw;
+	margin-bottom: 0.83vw;
+}
+.head_bg .head_left{
+    position: absolute;
+    /* left: 16px;
+    font-size: 16px; */
+	left: 0.83vw;
+	font-size: 0.83vw;
+    color: #fff;
+    font-family: Source Han Sans CN;
+    font-weight: 400;
+}
+.head_bg .head_left .time{
+    /* font-size: 20px; */
+	font-size: 1.042vw;
+    font-family: fantasy;
+    font-weight: 400;
+    /* width: 90px; */
+	width: 4vw;
+}
+.head_bg .head_left .line{
+    background-color: #fff;
+    /* width: 1px;
+    height: 13px;
+    margin: 0 42px=2.08vw; */
+	width: 0.052vw;
+	height: 0.677vw;
+	margin: 0 1.04vw;
+    /* 1.56vw=30px,1.56vw=24px,1.04vw=20px */
+}
+.head_bg .head_left .date span{
+    display: inline-block;
+    /* margin-left: 20px; */
+    margin-left: 1.41vw;
+}
+.head_bg .head_tabs{
+    position: absolute;
+    justify-content: space-between;
+    /* right: 6px; */
+    /* font-size: 16px; */
+	right: 0.304vw;
+    font-size: 0.83vw;
+}
+.head_bg .head_tabs .tab{
+    color: #05DFFF;
+    cursor: pointer;
+    /* background: url('images/city.png') no-repeat left 2px;
+    background-size: 68px 28px;
+    width: 80px;
+    height: 30px;
+    margin-right: 27px;
+	font-size: 16px; */
+    background: url('images/city.png') no-repeat left 0.1vw;
+	background-size: 3.54vw 1.46vw;
+	width: 4.167vw;
+	height: 1.56vw;
+	/* margin-right: 1.4vw=27px;0.42vw=8px */
+    margin-right: 0.50vw;
+	font-size: 0.83vw;
+}
+.head_bg .head_tabs .tab:last-child{
+    margin: 0;
+}
+.head_bg .head_tabs .tab.active{
+    font-weight: bold;
+    color: #fff;
+    /* background: url('images/a_city.png') no-repeat left 2px;
+    background-size: 68px 28px; */
+    background: url('images/a_city.png') no-repeat left 0.1vw;
+	background-size: 3.54vw 1.46vw;
+}
+.head_data{
+    justify-content: space-between;
+    /* padding: 0 10px; */
+    padding: 0 0.52vw;
+}
+.head_data .data_box{
+    flex-direction: column;
+    color: #fff;
+    /* width: 185px;
+    height: 86px; */
+    width: 9.64vw;
+    height: 7.96vh;
+    background: url(./images/date_bg.png) no-repeat;
+    background-size: 100% 100%;
+    font-family: Source Han Sans CN;
+}
+.head_data .data_box .num span{
+    font-weight: 500;
+    display: inline-block;
+    /* font-size: 12px;
+    margin-left: 10px; */
+    font-size: 0.625vw;
+    margin-left: 0.52vw;
+}
+.head_data .data_box .num .number{
+    /* font-size: 24px; */
+    font-size: 1.6vw;
+    font-weight: 500;
+}
+.head_data .data_box .tip{
+    /* font-size: 16px;
+    margin-bottom: 24px; */
+    font-size: 0.833vw;
+    margin-bottom: 1.25vw;
+}
+/* 主区域 */
+.main{
+    /* height: calc(100vh - 178px);
+    padding: 10px; */
+    height: 83.5vh;
+    padding: 0.52vw;
+    box-sizing: border-box;
+}
+/* .model_box{
+    height: calc(100% - 60px);
+} */
+.uniH{
+    background: url('./images/bg.png') no-repeat center top;
+    /* background-size: cover; */
+    background-size: 100% 100%;
+    position: relative;
+    /* height: calc(33vh - 70px);
+    padding: 10px 15px; */
+    height: 26.5vh;
+    padding: 0.52vw 0.78vw;
+    box-sizing: border-box;
+}
+.model{
+    /* width: calc(100% - 20px);
+    height: calc(33vh - 70px);
+    padding: 10px 15px; */
+    width: calc(100% - 1.01vw);
+    height: 26.5vh;
+    padding: 0.52vw 0.78vw;
+    background: url('./images/bg2.png') no-repeat center top;
+    /* background-size: cover; */
+    background-size: 100% 100%;
+    margin: 16px auto 0;
+    position: relative;
+    box-sizing: border-box;
+}
+.model1,.model4{
+    /* height: calc(33vh - 20px); */
+    margin-bottom: 10px;
+}
+.model3,.model6{
+    /* height: calc(33vh - 20px); */
+    margin-top: 10px;
+}
+.model_title{
+    position: absolute;
+    /* top: 16px;
+    left: 20px;
+    font-size: 20px; */
+    top: 0.833vw;
+    left: 1.04vw;
+    font-size: 1.04vw;
+    line-height: 1;
+    color: #fff;
+    font-family: Source Han Sans CN;
+    font-weight: 500;
+}
+
+
+/* 地图 */
+/* 隐藏地图水印 */
+.amap-logo {
+	right: 0 !important;
+	left: auto !important;
+	display: none!important;
+}
+.amap-copyright {
+	right: 0px !important;
+	left: auto !important;
+	visibility: hidden;
+	display: none!important;
+}
+.amap-icon img{
+    /* width: 3.54vw !important;
+    height: 4.44vh !important; */
+    width: 2.44vw !important;
+    height: 3vh !important;
+}
+.amap-info-content {
+    background: none;
+}
+.amap-info-close {
+    display: none;
+}
+.map-center{
+    position: relative;
+    /* width: calc(100% - 20px);
+    height: calc(66vh - 135px); */
+    width: calc(100% - 1.04vw);
+    height: 53.5vh;
+    margin: 0 auto;
+}
+.map-center .map-tip{
+    position: absolute;
+    /* left: 45px;
+    bottom: 20px; */
+    left: 2.34vw;
+    bottom: 1.04vw;
+    z-index: 9999;
+}
+.map-center .map-tip .map-tip-text{
+    /* padding-left: 64px;
+    height: 50px;
+    font-size: 14px; */
+    padding-left: 3.33vw;
+    height: 4.63vh;
+    font-size: 0.73vw;
+    line-height: 2.8;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 1);
+}
+.map-center .map-tip .map-tip-icon-no {
+    background: url(./images/icon1.png) no-repeat;
+    /* background-size: 54px 40px; */
+    background-size: 2.81vw 3.7vh;
+}
+
+.map-center .map-tip .map-tip-icon-open {
+    background: url(./images/icon2.png) no-repeat;
+    /* background-size: 54px 40px; */
+    background-size: 2.81vw 3.7vh;
+}
+#container{
+    width: 100%;
+    height: 100%;
+}
+
+/* echarts */
+/* start */
+.echarts_box{
+    /* height: calc(100% - 60px); */
+    height: calc(100% - 5.6vh);
+}
+#myChart{
+    /* height: 150px; */
+    height: 100%;
+    /* margin-top: 40px; */
+    margin-top: 2.08vw;
+}
+#myChart1, #myChart2, #myChart3, #myChart4, #myChart5{
+    height: 100%;
+    /* margin-top: 40px; */
+    margin-top: 2.08vw;
+}
+/* end */
+
+/* 30天场地到场人数TOP5start */
+.model6_list{
+    /* margin: 45px 0 0; */
+    margin: 2.34vw 0 0;
+}
+.model6_list .model6_li{
+    justify-content: space-between;
+    /* width: calc(100% - 10px);
+    height: 36px;
+    padding: 0 26px;
+    margin-left: 12px;
+    font-size: 16px;
+    margin-bottom: 10px; */
+    width: calc(100% - 0.52vw);
+    height: 3.33vh;
+    padding: 0 1.35vw;
+    margin-left: 0.625vw;
+    font-size: 0.833vw;
+    margin-bottom: 0.52vw;
+    color: #fff;
+    font-family: Source Han Sans CN;
+    background-color: rgba(55, 134, 167, 0.2);
+    position: relative;
+}
+.model6_list .model6_li:nth-child(1){
+    background-color: rgba(165, 57, 57, 0.2);
+}
+.model6_list .model6_li:nth-child(2){
+    background-color: rgba(193, 114, 29, 0.2);
+}
+.model6_list .model6_li:nth-child(3){
+    background-color: rgba(84, 136, 42, 0.2);
+}
+.model6_list .model6_li:last-child{
+    margin-bottom: 0;
+}
+.model6_list .model6_li::before{
+    content: "";
+    background-color: #4E99E5;
+    position: absolute;
+    top: 0;
+    /* left: -10px;
+    width: 3px;
+    height: 36px; */
+    left: -0.52vw;
+    width: 0.156vw;
+    height: 3.33vh;
+}
+.model6_list .model6_li:nth-child(1)::before{
+    background-color: #A53939;
+}
+.model6_list .model6_li:nth-child(2)::before{
+    background-color: #C1721D;
+}
+.model6_list .model6_li:nth-child(3)::before{
+    background-color: #43C03C;
+}
+.model6_list .model6_li .school_name span{
+    display: inline-block;
+    /* margin-right: 20px;
+    font-size: 16px; */
+    margin-right: 1.04vw;
+    font-size: 0.833vw;
+    font-weight: bold;
+    font-style: italic;
+    font-family: Source Han Sans CN;
+    color: #4E99E5;
+}
+.model6_list .model6_li:nth-child(1) .school_name span{
+    color: #A53939;
+}
+.model6_list .model6_li:nth-child(2) .school_name span{
+    color: #DFDA4A;
+}
+.model6_list .model6_li:nth-child(3) .school_name span{
+    color: #43C03C;
+}
+.model6_list .model6_li .people_num{
+    /* font-size: 16px; */
+    font-size: 0.833vw;
+    font-family: Source Han Sans CN;
+    font-weight: bold;
+    font-style: italic;
+    color: #4E99E5;
+}
+.model6_list .model6_li:nth-child(1) .people_num{
+    color: #F03D53;
+}
+.model6_list .model6_li:nth-child(2) .people_num{
+    color: #C8C345;
+}
+.model6_list .model6_li:nth-child(3) .people_num{
+    color: #43C03C;
+}
+/* 30天场地到场人数TOP5end */

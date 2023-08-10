@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>莆田校园健身大数据平台</title>
+        <!-- element UI-引入样式 -->
+        <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+        <link rel="stylesheet" href="./reset.css">
+        <link rel="stylesheet" href="./styles.css">
+    </head>
+    <body>
+        <div id="app">
+            <img class="map_bg" src="./images/ch_map.png" alt="">
+            <div style="display: none;" :style="{display: 'block'}">
+                <div class="head_box">
+                    <div class="head_bg flex ac jc">
+                        <div class="head_title">
+                            <!-- 莆田校园健身大数据平台 -->
+                            <img src="./images/title_img.png" alt="">
+                        </div>
+                        <div class="head_left flex ac">
+                            <div class="time">
+                                {{time}}
+                            </div>
+                            <div class="line"></div>
+                            <div class="date">
+                                {{date}}<span>{{week}}</span>
+                            </div>
+                            <div class="line"></div>
+                            <div class="weather" v-html="weatherData"></div>
+                        </div>
+                        <div class="head_tabs flex ac">
+                            <div class="tab flex ac jc" :class="{'active':active==i}" v-for="(item,i) in city"
+                                :key="item" @click="switchTab(i)">
+                                {{item}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="head_data flex ac">
+                        <div class="data_box flex ac jc" v-for="(item,i) in counting" :key="i">
+                            <div class="num">
+                                <span class="number" :data-target="item.num">{{item.num}}</span>
+                                <span>{{item.title.indexOf("开放场地") != -1?"所":"人"}}</span>
+                            </div>
+                            <div class="tip">
+                                {{item.title}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="main">
+                    <el-row :gutter="10">
+                        <el-col :span="6">
+                            <div class="model_box">
+                                <!-- 近七天用户注册走势分析 -->
+                                <div class="model1 uniH">
+                                    <div class="model_title">
+                                        近七天用户注册走势分析
+                                    </div>
+                                    <div class="echarts_box">
+                                        <div id="myChart1"></div>
+                                    </div>
+                                </div>
+                                <!-- 注册用户画像分析 -->
+                                <div class="model2 uniH">
+                                    <div class="model_title">
+                                        注册用户画像分析
+                                    </div>
+                                    <div class="echarts_box">
+                                        <div id="myChart2"></div>
+                                    </div>
+                                </div>
+                                <!-- 场地开发类型统计 -->
+                                <div class="model3 uniH">
+                                    <div class="model_title">
+                                        场地开发类型统计
+                                    </div>
+                                    <div class="echarts_box">
+                                        <div id="myChart3"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </el-col>
+                        <el-col :span="12">
+                            <div class="model_box">
+                                <!-- 地图 -->
+                                <div class="map-center">
+                                    <div class="map-tip">
+                                        <div class="map-tip-text map-tip-icon-open">正常开放</div>
+                                        <div class="map-tip-text map-tip-icon-no">临时关闭</div>
+                                    </div>
+                                    <div id="container"></div>
+                                </div>
+                                <!-- 近15天预约/进场走势图 -->
+                                <div class="model">
+                                    <div class="model_title">
+                                        预约/进场走势图
+                                    </div>
+                                    <div class="echarts_box">
+                                        <div id="myChart"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </el-col>
+                        <el-col :span="6">
+                            <div class="model_box">
+                                <!-- 近七天用户到场走势分析 -->
+                                <div class="model4 uniH">
+                                    <div class="model_title">
+                                        近七天用户到场走势分析
+                                    </div>
+                                    <div class="echarts_box">
+                                        <div id="myChart4"></div>
+                                    </div>
+                                </div>
+                                <!-- 近6月注册与到场对比分析 -->
+                                <div class="model5 uniH">
+                                    <div class="model_title">
+                                        近6月注册与到场对比分析
+                                    </div>
+                                    <div class="echarts_box">
+                                        <div id="myChart5"></div>
+                                    </div>
+                                </div>
+                                <!-- 30天场地到场人数TOP5 -->
+                                <div class="model6 uniH">
+                                    <div class="model_title">
+                                        30天场地到场人数TOP5
+                                    </div>
+                                    <div class="model6_list">
+                                        <div class="model6_li flex ac" v-for="(item,i) in model6List" :key="i">
+                                            <div class="school_name">
+                                                <span>{{i + 1}}</span>{{item.schoolName}}
+                                            </div>
+                                            <div class="people_num">
+                                                <span class="number" :data-target="item.num">{{item.num}}</span> 人
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </el-col>
+                    </el-row>
+                </div>
+            </div>
+        </div>
+    </body>
+    <!-- 大屏可视化自适应 -->
+    <!-- <script type="text/javascript" src="https://www.npmjs.com/package/vue2-scale-box"></script> -->
+    <!-- vue.js -->
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <script src="https://unpkg.com/vue@2"></script>
+    <!-- 生产环境版本，优化了尺寸和速度 -->
+    <!-- <script src="https://unpkg.com/vue@2/dist/vue.js"> -->
+    <!-- element UI-引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <!-- echarts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <!-- 高德地图api -->
+    <script type="text/javascript">
+        window._AMapSecurityConfig = {
+            securityJsCode: '08251eadc6b3dd28e8964a630d060649',
+        }
+    </script>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=56bab26906c52879c7f0cb1ac4b52313">
+    </script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="./data.js"></script>
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data() {
+                return {
+                    date: null,
+                    week: null,
+                    time: null,
+                    weather: null,
+                    myChart: null,
+                    myChart1: null,
+                    myChart2: null,
+                    myChart3: null,
+                    myChart4: null,
+                    myChart5: null,
+                    myChart6: null,
+                    weatherData: "",
+                    city: ["全市", "城厢区", "涵江区", "荔城区", "秀屿区", "仙游县", "湄洲湾"],
+                    active: 0,
+                    // 头部9个数据汇总数
+                    counting: [],
+                    // 地图数据
+                    schoolList: [],
+                    // 近15天预约人数
+                    orderNum: [],
+                    // 近15天进场人数
+                    InNum: [],
+                    // 到场人数TOP5
+                    model6List: [],
+                    // 近7天用户注册走势分析
+                    registerNum: [],
+                    // 近7天用户到场走势分析
+                    arriveNum: [],
+                    // 近6月注册与到场对比分析
+                    inTrend: [],
+                    registerTrend: [],
+                    // 场地开放类型统计
+                    siteNum: [],
+                    // 注册用户画像分析
+                    ageNum: [],
+                    sexNum: [],
+                }
+            },
+            mounted() {
+                // 默认获取全市数据
+                let dataJson = switchCityFun(0);
+                this.counting = dataJson.counting;
+                this.schoolList = dataJson.schoolList;
+                this.orderNum = dataJson.orderNum;
+                this.InNum = dataJson.InNum;
+                this.registerNum = dataJson.registerNum;
+                this.arriveNum = dataJson.arriveNum;
+                this.inTrend = dataJson.inTrend;
+                this.registerTrend = dataJson.registerTrend;
+                this.siteNum = dataJson.siteNum;
+                this.ageNum = dataJson.ageNum;
+                this.sexNum = dataJson.sexNum;
+                this.model6List = dataJson.model6List;
+                // 定时器
+                const clock = setInterval(() => {
+                    this.date = this.getToday().date;
+                    this.week = this.getToday().week;
+                    this.time = this.getToday().time;
+                }, 1000);
+                // 定时器销毁
+                this.$once("hook:beforeDestroy", () => {
+                    clearInterval(clock);
+                })
+                this.initMap();
+                this.getWeather();
+                this.initChart();
+                this.initChart1();
+                this.initChart2();
+                this.initChart3();
+                this.initChart4();
+                this.initChart5();
+                // 数字自增
+                this.$nextTick(() => {
+                    this.countUp();
+                })
+            },
+            methods: {
+                //初始化地图
+                initMap() {
+                    var infoWindow = new AMap.InfoWindow({
+                        offset: new AMap.Pixel(0, -30)
+                    });
+                    var map = new AMap.Map("container", {
+                        resizeEnable: true, //是否监控地图容器尺寸变化
+                        mapStyle: "amap://styles/darkblue",
+                        zoom: 13,
+                        center: ['119.007662', '25.454202'],
+                        // center: ['118.69177', '25.36214']
+                    });
+
+                    AMap.plugin('AMap.DistrictSearch', function() {
+                        var districtSearch = new AMap.DistrictSearch({
+                            extensions: 'all',
+                            subdistrict: 0
+                        })
+                        // 搜索所有省/直辖市信息  --下边的安徽省，可根据需要换成其他省、市或区县的地名
+                        districtSearch.search('莆田市', function(status, result) {
+                            // 外多边形坐标数组和内多边形坐标数组
+                            var outer = [
+                                new AMap.LngLat(-360, 90, true),
+                                new AMap.LngLat(-360, -90, true),
+                                new AMap.LngLat(360, -90, true),
+                                new AMap.LngLat(360, 90, true)
+                            ]
+                            var holes = result.districtList[0].boundaries
+
+                            var pathArray = [outer]
+                            pathArray.push.apply(pathArray, holes)
+                            var polygon = new AMap.Polygon({
+                                pathL: pathArray,
+                                // strokeColor: '#f00',
+                                strokeWeight: 1,
+                                fillColor: 'rgba(0,5,43,0.2)',
+                                fillOpacity: 1
+                            })
+                            polygon.setPath(pathArray)
+                            map.add(polygon)
+                        })
+                    })
+
+                    var schoolList = this.schoolList;
+                    var markerList = [];
+                    for (let i = 0; i < schoolList.length; i++) {
+                        let iconImg
+                        if (schoolList[i].state == 0) {
+                            iconImg = './images/big_icon2.png'
+                            // iconImg = './images/open.gif'
+                        } else {
+                            iconImg = './images/big_icon1.png'
+                            // iconImg = './images/close.gif'
+                        }
+                        var icon = new AMap.Icon({
+                            image: iconImg,
+                            // size: new AMap.Size(48, 47),
+                            // imageSize: new AMap.Size(48, 47)
+                            // size: new AMap.Size(68, 48),
+                            // imageSize: new AMap.Size(68, 48)
+                            size: new AMap.Size(47, 28),
+                            imageSize: new AMap.Size(47, 28)
+                        });
+                        var marker = new AMap.Marker({
+                            position: new AMap.LngLat(
+                                schoolList[i].longitude,
+                                schoolList[i].latitude,
+                            ), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+                            icon: icon,
+                            // 自定义图标设置偏移为了符合图标底部是实际定位点的效果，可以看到图标大小是35*38，基于左上角原点，x轴偏移半个宽度，y轴偏移整个高度即可，即offset: [-17.5, -38]
+                            offset: new AMap.Pixel(-24, -28)
+                        });
+                        // marker.content =
+                        // 	"<div style='min-width:300px;padding:20px;border: 1px solid rgba(0,0,255,0);border-radius: 3px;background: rgba(0,0,0,0.74);color: #fff;font-size:16px'><div style='font-size:18px;line-height:30px'>" +
+                        // 	schoolList[i].schoolName + "<span style='color:#01E8FA'>(" + schoolList[i]
+                        // 	.statusText + ")</span></div>" +
+                        // 	"<div style='line-height:30px'>可容纳数：" +
+                        // 	"<span style='color:#01E8FA;min-width:60px;display:inline-block'>" +
+                        // 	schoolList[i]
+                        // 	.capacity + "</span>历史进场：" + "<span style='color:#01E8FA'>" + schoolList[i]
+                        // 	.historyEntry + "</span></div>" +
+                        // 	"<div style='line-height:30px'>开放场地：" + "<span style='color:#01E8FA'>" + schoolList[i]
+                        // 	.openPlace +
+                        // 	"</span></div><hr style='color:#ccc'>" +
+                        // 	"<div style='line-height:30px'>今日预约：" +
+                        // 	"<span style='color:#01E8FA;min-width:60px;;display:inline-block'>" +
+                        // 	schoolList[i]
+                        // 	.todayOrder + "</span>今日到场：" + "<span style='color:#01E8FA'>" + schoolList[i]
+                        // 	.todayUp + "</span></div>" + "<div style='line-height:30px'>实时在场：" +
+                        // 	"<span style='color:#01E8FA;min-width:60px;display:inline-block'>" + schoolList[i]
+                        // 	.realityIn + "</span>今日离场：" + "<span style='color:#01E8FA'>" + schoolList[i]
+                        // 	.todayLeave + "</span></div>"
+                        marker.content =
+                            "<div style='min-width:15.625vw;padding:1.04vw;border: 0.052vw solid rgba(0,0,255,0);border-radius: 0.156vw;background: rgba(0,0,0,0.74);color: #fff;font-size:0.833vw'><div style='font-size:0.9375vw;line-height:1.5625vw'>" +
+                            schoolList[i].schoolName + "<span style='color:#01E8FA'>(" + schoolList[i]
+                            .statusText + ")</span></div>" +
+                            "<div style='line-height:1.5'>可容纳数：" +
+                            "<span style='color:#01E8FA;min-width:3.125vw;display:inline-block'>" +
+                            schoolList[i]
+                            .capacity + "</span>历史进场：" + "<span style='color:#01E8FA'>" + schoolList[i]
+                            .historyEntry + "</span></div>" +
+                            "<div style='line-height:1.5'>开放场地：" + "<span style='color:#01E8FA'>" + schoolList[
+                                i]
+                            .openPlace +
+                            "</span></div><hr style='color:#ccc'>" +
+                            "<div style='line-height:1.5'>今日预约：" +
+                            "<span style='color:#01E8FA;min-width:3.125vw;;display:inline-block'>" +
+                            schoolList[i]
+                            .todayOrder + "</span>今日到场：" + "<span style='color:#01E8FA'>" + schoolList[i]
+                            .todayUp + "</span></div>" + "<div style='line-height:1.5'>实时在场：" +
+                            "<span style='color:#01E8FA;min-width:3.125vw;display:inline-block'>" + schoolList[
+                                i]
+                            .realityIn + "</span>今日离场：" + "<span style='color:#01E8FA'>" + schoolList[i]
+                            .todayLeave + "</span></div>"
+                        markerList.push(marker);
+                        marker.on('mouseover', function(e) {
+                            infoWindow.setContent(e.target.content);
+                            infoWindow.open(map, e.target.getPosition());
+                        });
+                        marker.on('mouseout', function(e) {
+                            infoWindow.close(map, e.target.getPosition());
+                        });
+                    }
+                    map.add(markerList);
+                    map.setFitView(null, false, [150, 60, 100, 60]);
+                },
+                // 获取日期
+                getToday() {
+                    let dates = new Date();
+                    let on1 = "-";
+                    let on2 = ":";
+                    let onY = dates.getFullYear();
+                    let onM = dates.getMonth() + 1;
+                    let onD = dates.getDate();
+                    let onS = dates.getHours();
+                    let onF = dates.getMinutes();
+                    let onN = dates.getSeconds();
+                    let week = dates.getDay();
+                    let weekArr = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六', ]
+                    week = weekArr[week]
+
+                    if (onM >= 1 && onM <= 9) {
+                        onM = "0" + onM;
+                    }
+                    if (onD >= 1 && onD <= 9) {
+                        onD = "0" + onD;
+                    }
+                    if (onS >= 0 && onS <= 9) {
+                        onS = "0" + onS;
+                    }
+                    if (onF >= 0 && onF <= 9) {
+                        onF = "0" + onF;
+                    }
+                    if (onN >= 0 && onN <= 9) {
+                        onN = "0" + onN;
+                    }
+
+                    return {
+                        date: onY + on1 + onM + on1 + onD,
+                        week: week,
+                        time: onS + on2 + onF + on2 + onN,
+                    };
+                },
+                // 获取莆田市当天天气
+                getWeather(city = 350300) {
+                    console.log(city, 'city');
+                    let xmlHttpReg = null;
+                    if (window.ActiveXObject) {
+                        xmlHttpReg = new ActiveXObject('Microsoft.XMLHTTP');
+                    } else if (window.XMLHttpRequest) {
+                        xmlHttpReg = new XMLHttpRequest();
+                    }
+                    // console.log(xmlHttpReg);
+                    if (xmlHttpReg != null) {
+                        xmlHttpReg.open('GET', 'https://restapi.amap.com/v3/weather/weatherInfo?city=' + city +
+                            '&key=89a92c22474a8bd7177343670f5800f0', true);
+                        xmlHttpReg.responseType = 'json';
+                        xmlHttpReg.setRequestHeader('Content-Type', 'application/json');
+                        xmlHttpReg.onload = () => {
+                            //xmlHttpReg.response对象里面就是请求链接后响应的内容，对响应信息处理成我们想要的数据形式放页面内
+                            // console.log(xmlHttpReg.response);
+                            let res = xmlHttpReg.response.lives[0];
+                            // console.log(res);
+                            let space = '<span>&nbsp;&nbsp;&nbsp;&nbsp;</span>'
+                            this.weatherData = `${res.temperature}℃` + space + `${res.weather}`;
+                        };
+                        //这个是一定要加的，否则页面不会有this.weatherData的数据
+                        xmlHttpReg.send();
+                    }
+
+                },
+                // 城市tab切换
+                switchTab(i) {
+                    if (this.active == i) return;
+                    this.active = i;
+                    // 各区天气情况
+                    let cityCode = 350300;
+                    if (i == 0) {
+                        cityCode = 350300;
+                    } else if (i == 1) {
+                        cityCode = 350302;
+                    } else if (i == 2) {
+                        cityCode = 350303;
+                    } else if (i == 3) {
+                        cityCode = 350304;
+                    } else if (i == 4) {
+                        cityCode = 350305;
+                    } else if (i == 5) {
+                        cityCode = 350300;
+                    } else {
+                        cityCode = 350322;
+                    }
+                    this.getWeather(cityCode);
+                    let dataJson = switchCityFun(i);
+                    // console.log(dataJson,999999);
+                    this.counting = dataJson.counting;
+                    this.schoolList = dataJson.schoolList;
+                    this.orderNum = dataJson.orderNum;
+                    this.InNum = dataJson.InNum;
+                    this.registerNum = dataJson.registerNum;
+                    this.arriveNum = dataJson.arriveNum;
+                    this.inTrend = dataJson.inTrend;
+                    this.registerTrend = dataJson.registerTrend;
+                    this.siteNum = dataJson.siteNum;
+                    this.ageNum = dataJson.ageNum;
+                    this.sexNum = dataJson.sexNum;
+                    this.model6List = dataJson.model6List;
+                    this.initMap();
+                    this.myChart.dispose();
+                    this.initChart();
+                    this.myChart1.dispose();
+                    this.initChart1();
+                    this.myChart2.dispose();
+                    this.initChart2();
+                    this.myChart3.dispose();
+                    this.initChart3();
+                    this.myChart4.dispose();
+                    this.initChart4();
+                    this.myChart5.dispose();
+                    this.initChart5();
+                    // 数字自增
+                    this.$nextTick(() => {
+                        this.countUp();
+                    })
+                },
+                // 近15预约/进场走势图
+                initChart() {
+                    let chartDom = document.getElementById('myChart');
+                    let myChart = echarts.init(chartDom);
+                    let option;
+
+                    option = {
+                        textStyle: {
+                            color: '#fff',
+                        },
+                        legend: {
+                            right: '0',
+                            textStyle: {
+                                color: '#fff',
+                            },
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'cross',
+                                label: {
+                                    backgroundColor: '#6a7985'
+                                }
+                            }
+                        },
+                        grid: {
+                            top: '30',
+                            bottom: '0',
+                            left: '10',
+                            right: '20',
+                            containLabel: true,
+                        },
+                        xAxis: [{
+                            type: 'category',
+                            // 两边留白
+                            boundaryGap: true,
+                            axisLine: {
+                                show: false,
+                            },
+                            axisLabel: {
+                                show: true,
+                                interval: 0,
+                                // color: '#1e9fff',
+                                width: 100,
+                                overflow: 'truncate',
+                                // rotate: 10, //文字旋转
+                                formatter: function(value) {
+                                    if (value.length > 5) {
+                                        return `${value.slice(0, 4)}...`;
+                                    }
+                                    return value;
+                                }
+                            },
+                            // data: ['0点 ~ 5点', '6点', '7点', '8点', '9点', '10点',
+                            //     '11点', '12点', '13点', '14点', '15点', '16点', '17点', '18点', '19点', '20点', '21点', '22点 ~ 24点'
+                            // ],
+                            data: ['00:00 ~ 05:00', '06:00', '07:00', '08:00', '09:00', '10:00',
+                                '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00',
+                                '18:00', '19:00', '20:00', '21:00', '22:00 ~ 24:00'
+                            ],
+                            // data: ['00:00 ~ 05:00', '06:00~10:00', '10:00~14:00', '14:00~18:00',
+                            //     '18:00~22:00', '22:00 ~ 24:00'],
+                        }],
+                        yAxis: [{
+                            type: 'value',
+                            name: '单位/人',
+                            splitLine: {
+                                show: false,
+                            },
+                            axisLine: {
+                                show: false,
+                            },
+                        }],
+                        series: [{
+                            name: '预约人数',
+                            type: 'line',
+                            showSymbol: false,
+                            // 折线平滑
+                            smooth: true,
+                            itemStyle: {
+                                normal: {
+                                    color: '#E3EE64',
+                                    lineStyle: {
+                                        color: '#E3EE64'
+                                    }
+                                }
+                            },
+                            areaStyle: {
+                                color: {
+                                    type: 'linear',
+                                    x: 0,
+                                    y: 0,
+                                    x2: 0,
+                                    y2: 1,
+                                    colorStops: [{
+                                        offset: 0,
+                                        color: '#E3EE64' // 0% 处的颜色
+                                    }, {
+                                        offset: 1,
+                                        color: 'transparent' // 100% 处的颜色
+                                    }],
+                                    global: false
+                                }
+                            },
+                            emphasis: {
+                                focus: 'series'
+                            },
+                            data: this.InNum,
+                        }, {
+                            name: '进场人数',
+                            type: 'line',
+                            showSymbol: false,
+                            // 折线平滑
+                            smooth: true,
+                            itemStyle: {
+                                normal: {
+                                    color: '#43C03C',
+                                    lineStyle: {
+                                        color: '#43C03C'
+                                    }
+                                }
+                            },
+                            areaStyle: {
+                                color: {
+                                    type: 'linear',
+                                    x: 0,
+                                    y: 0,
+                                    x2: 0,
+                                    y2: 1,
+                                    colorStops: [{
+                                        offset: 0,
+                                        color: '#43C03C' // 0% 处的颜色
+                                    }, {
+                                        offset: 1,
+                                        color: 'transparent' // 100% 处的颜色
+                                    }],
+                                    global: false
+                                }
+                            },
+                            emphasis: {
+                                focus: 'series'
+                            },
+                            data: this.orderNum,
+                        }]
+                    };
+                    option && myChart.setOption(option);
+                    window.addEventListener('resize', function() {
+                        myChart.resize();
+                    });
+                    this.myChart = myChart;
+                },
+                // 近7天用户注册走势分析
+                initChart1() {
+                    let chartDom = document.getElementById('myChart1');
+                    let myChart1 = echarts.init(chartDom);
+                    let option;
+                    // 获取近7天日期
+                    let dateData = [this.getDay(-7), this.getDay(-6), this.getDay(-5), this.getDay(-4), this
+                        .getDay(-3), this.getDay(-2), this.getDay(-1)
+                    ];
+
+                    option = {
+                        textStyle: {
+                            color: '#fff',
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'cross',
+                                label: {
+                                    backgroundColor: '#6a7985'
+                                }
+                            }
+                        },
+                        grid: {
+                            top: '30',
+                            bottom: '0',
+                            left: '10',
+                            right: '20',
+                            containLabel: true,
+                        },
+                        xAxis: [{
+                            type: 'category',
+                            boundaryGap: false,
+                            axisLine: {
+                                show: false,
+                            },
+                            axisLabel: {
+                                show: true,
+                                interval: 0,
+                                // color: '#1e9fff',
+                                width: 80,
+                                overflow: 'truncate'
+                            },
+                            data: dateData,
+                            // data: ['08-09', '08-10', '08-11', '08-12', '08-13', '08-14', '08-15'],
+                        }],
+                        yAxis: [{
+                            type: 'value',
+                            name: '单位/人',
+                            splitLine: {
+                                show: false,
+                            },
+                            axisLine: {
+                                show: false,
+                            },
+                        }],
+                        series: [{
+                            name: '注册人数',
+                            type: 'line',
+                            showSymbol: false,
+                            smooth: true,
+                            itemStyle: {
+                                normal: {
+                                    color: '#FFFF00',
+                                    lineStyle: {
+                                        color: '#FFFF00'
+                                    }
+                                }
+                            },
+                            areaStyle: {
+                                color: {
+                                    type: 'linear',
+                                    x: 0,
+                                    y: 0,
+                                    x2: 0,
+                                    y2: 1,
+                                    colorStops: [{
+                                        offset: 0,
+                                        color: '#FFFF00' // 0% 处的颜色
+                                    }, {
+                                        offset: 1,
+                                        color: 'transparent' // 100% 处的颜色
+                                    }],
+                                    global: false
+                                }
+                            },
+                            emphasis: {
+                                focus: 'series'
+                            },
+                            data: this.registerNum,
+                        }]
+                    };
+                    option && myChart1.setOption(option);
+                    window.addEventListener('resize', function() {
+                        myChart1.resize();
+                    });
+                    this.myChart1 = myChart1;
+                },
+                // 近7天用户到场走势分析
+                initChart4() {
+                    let chartDom = document.getElementById('myChart4');
+                    let myChart4 = echarts.init(chartDom);
+                    let option;
+                    // 获取近7天日期
+                    let dateData = [this.getDay(-7), this.getDay(-6), this.getDay(-5), this.getDay(-4), this
+                        .getDay(-3), this.getDay(-2), this.getDay(-1)
+                    ];
+
+                    option = {
+                        textStyle: {
+                            color: '#fff',
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'cross',
+                                label: {
+                                    backgroundColor: '#6a7985'
+                                }
+                            }
+                        },
+                        grid: {
+                            top: '30',
+                            bottom: '0',
+                            left: '10',
+                            right: '20',
+                            containLabel: true,
+                        },
+                        xAxis: [{
+                            type: 'category',
+                            boundaryGap: false,
+                            axisLine: {
+                                show: false,
+                            },
+                            axisLabel: {
+                                show: true,
+                                interval: 0,
+                                // color: '#1e9fff',
+                                width: 80,
+                                overflow: 'truncate'
+                            },
+                            data: dateData,
+                            // data: ['08-09', '08-10', '08-11', '08-12', '08-13', '08-14', '08-15'],
+                        }],
+                        yAxis: [{
+                            type: 'value',
+                            name: '单位/人',
+                            splitLine: {
+                                show: false,
+                            },
+                            axisLine: {
+                                show: false,
+                            },
+                        }],
+                        series: [{
+                            name: '到场人数',
+                            type: 'line',
+                            showSymbol: false,
+                            smooth: true,
+                            itemStyle: {
+                                normal: {
+                                    color: '#FF4E61',
+                                    lineStyle: {
+                                        color: '#FF4E61'
+                                    }
+                                }
+                            },
+                            areaStyle: {
+                                color: {
+                                    type: 'linear',
+                                    x: 0,
+                                    y: 0,
+                                    x2: 0,
+                                    y2: 1,
+                                    colorStops: [{
+                                        offset: 0,
+                                        color: '#FF4E61' // 0% 处的颜色
+                                    }, {
+                                        offset: 1,
+                                        color: 'transparent' // 100% 处的颜色
+                                    }],
+                                    global: false
+                                }
+                            },
+                            emphasis: {
+                                focus: 'series'
+                            },
+                            data: this.arriveNum,
+                        }]
+                    };
+                    option && myChart4.setOption(option);
+                    window.addEventListener('resize', function() {
+                        myChart4.resize();
+                    });
+                    this.myChart4 = myChart4;
+                },
+                // 近6月注册与到场对比分析
+                initChart5() {
+                    var chartDom = document.getElementById('myChart5');
+                    var myChart5 = echarts.init(chartDom);
+                    var option;
+                    let monthData = this.getMonthFun(6);
+
+                    option = {
+                        color: ['#8DE46D', '#00A6FF'],
+                        textStyle: {
+                            color: '#fff',
+                        },
+                        legend: {
+                            right: '0',
+                            textStyle: {
+                                color: '#fff',
+                            },
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'shadow'
+                            }
+                        },
+                        grid: {
+                            top: '30',
+                            bottom: '0',
+                            left: '10',
+                            right: '20',
+                            containLabel: true,
+                        },
+                        xAxis: {
+                            type: 'category',
+                            axisLine: {
+                                show: false,
+                            },
+                            axisLabel: {
+                                show: true,
+                                interval: 0,
+                                // color: '#1e9fff',
+                                width: 80,
+                                overflow: 'truncate'
+                            },
+                            data: monthData,
+                            // data: ['2月', '3月', '4月', '5月', '6月', '7月'],
+                        },
+                        yAxis: {
+                            name: '单位/人',
+                            type: 'value',
+                            splitLine: {
+                                show: false,
+                            },
+                            axisLine: {
+                                show: false,
+                            },
+                            data: ['注册人数', '到场人数']
+                        },
+                        series: [{
+                            name: '注册',
+                            type: 'bar',
+                            barWidth: 14,
+                            stack: 'total',
+                            itemStyle: {
+                                normal: {
+                                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                        // 四个数字分别对应 数组中颜色的开始位置，分别为 右，下，左，上。例如（1,0,0,0 ）代表从右边开始渐
+                                        // 变。offset取值为0~1，0代表开始时的颜色，1代表结束时的颜色，柱子表现为这两种颜色的渐变。
+                                        offset: 0,
+                                        color: '#FFD914'
+                                    }, {
+                                        offset: 1,
+                                        color: '#06FFEE'
+                                    }]),
+                                }
+                            },
+                            emphasis: {
+                                focus: 'series'
+                            },
+                            data: this.registerTrend,
+                        }, {
+                            name: '到场',
+                            type: 'bar',
+                            barWidth: 14,
+                            stack: 'total',
+                            itemStyle: {
+                                normal: {
+                                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                        // 四个数字分别对应 数组中颜色的开始位置，分别为 右，下，左，上。例如（1,0,0,0 ）代表从右边开始渐
+                                        // 变。offset取值为0~1，0代表开始时的颜色，1代表结束时的颜色，柱子表现为这两种颜色的渐变。
+                                        offset: 0,
+                                        color: '#3E62EF'
+                                    }, {
+                                        offset: 1,
+                                        color: '#32A3FF'
+                                    }]),
+                                }
+                            },
+                            emphasis: {
+                                focus: 'series'
+                            },
+                            data: this.inTrend,
+                        }]
+                    };
+                    option && myChart5.setOption(option);
+                    window.addEventListener('resize', function() {
+                        myChart5.resize();
+                    });
+                    this.myChart5 = myChart5;
+                },
+                // 场地开放类型统计
+                initChart3() {
+                    var chartDom = document.getElementById('myChart3');
+                    var myChart3 = echarts.init(chartDom);
+                    var option;
+
+                    option = {
+                        color: ['#8DE46D'],
+                        textStyle: {
+                            color: '#fff',
+                        },
+                        // legend: {
+                        //     right: '0',
+                        //     textStyle: {
+                        //         color: '#fff',
+                        //     },
+                        // },
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'shadow'
+                            }
+                        },
+                        grid: {
+                            top: '30',
+                            bottom: '0',
+                            left: '10',
+                            right: '20',
+                            containLabel: true,
+                        },
+                        xAxis: {
+                            type: 'category',
+                            axisLine: {
+                                show: false,
+                            },
+                            axisLabel: {
+                                show: true,
+                                interval: 0,
+                                // color: '#1e9fff',
+                                width: 80,
+                                overflow: 'truncate'
+                            },
+                            data: ['田径场', '足球场', '篮球场', '排球场', '乒乓球', '健身区'],
+                        },
+                        yAxis: {
+                            name: '单位/人',
+                            type: 'value',
+                            splitLine: {
+                                show: false,
+                            },
+                            axisLine: {
+                                show: false,
+                            },
+                            data: ['开放场地']
+                        },
+                        series: [{
+                            name: '人数',
+                            type: 'bar',
+                            barWidth: 14,
+                            stack: 'total',
+                            itemStyle: {
+                                normal: {
+                                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                        // 四个数字分别对应 数组中颜色的开始位置，分别为 右，下，左，上。例如（1,0,0,0 ）代表从右边开始渐
+                                        // 变。offset取值为0~1，0代表开始时的颜色，1代表结束时的颜色，柱子表现为这两种颜色的渐变。
+                                        offset: 0,
+                                        color: '#40FF60'
+                                    }, {
+                                        offset: 0.5,
+                                        color: '#FF6161'
+                                    }, {
+                                        offset: 1,
+                                        color: '#FF8B7E'
+                                    }]),
+                                }
+                            },
+                            emphasis: {
+                                focus: 'series'
+                            },
+                            label: {
+                                show: true,
+                                position: 'top',
+                                color: '#fff'
+                            },
+                            data: this.siteNum,
+                        }]
+                    };
+                    option && myChart3.setOption(option);
+                    window.addEventListener('resize', function() {
+                        myChart3.resize();
+                    });
+                    this.myChart3 = myChart3;
+                },
+                // 注册用户画像分析
+                initChart2() {
+                    var chartDom = document.getElementById('myChart2');
+                    var myChart2 = echarts.init(chartDom);
+                    var option;
+                    let ageNum = this.ageNum;
+                    option = {
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: '{a} <br/>{b}: {c}人 ({d}%)'
+                        },
+                        legend: {
+                            orient: 'vertical',
+                            left: 20,
+                            top: 'center',
+                            bottom: 20,
+                            textStyle: {
+                                color: '#fff',
+                            },
+                            fontSize: 16,
+                            formatter: function(name) {
+                                let total = 0
+                                let tarValue
+                                for (let i = 0; i < ageNum.length; i++) {
+                                    total += ageNum[i].value
+                                    if (ageNum[i].name == name) {
+                                        tarValue = ageNum[i].value
+                                    }
+                                }
+                                //计算出百分比
+                                let p = Math.round((tarValue / total) * 100) + '%'
+                                return `${name}  ${p}`
+                            },
+                            data: [
+                                '18岁以下',
+                                '18-35岁',
+                                '35-55岁',
+                                '55岁以上'
+                            ]
+                        },
+                        series: [{
+                                name: '男女比例',
+                                type: 'pie',
+                                selectedMode: 'single',
+                                radius: [0, '65%'],
+                                center: ['65%', '50%'],
+                                label: {
+                                    position: 'inner',
+                                    fontSize: 14,
+                                    lineHeight: 20,
+                                    // formatter: '{d}%\n{b}',
+                                    formatter: function(data) {
+                                        console.log(data)
+                                        let a = data.name;
+                                        let b = data.percent.toFixed(0) + "%";
+                                        let c = a + "\n" + b;
+                                        return c
+                                    },
+                                    color: "#fff"
+                                },
+                                labelLine: {
+                                    show: false
+                                },
+                                data: this.sexNum
+                            },
+                            {
+                                name: '年龄比例',
+                                type: 'pie',
+                                radius: ['75%', '90%'],
+                                center: ['65%', '50%'],
+                                label: {
+                                    show: false,
+                                    // formatter: '{b|{b}}\n{c}人  {d}%',
+                                    // formatter: '{d}%\n{b|{b}}',
+                                    // formatter: function (data){
+                                    //      // console.log(data)
+                                    //      let a = data.name;
+                                    //      let b = data.percent.toFixed(0) + "%";
+                                    //      let c = a + "\n" + b;
+                                    //      return c
+                                    // },
+                                    // rich: {
+                                    //     a: {
+                                    //         color: '#fff',
+                                    //         fontSize: 14,
+                                    //         fontWeight: 'bold',
+                                    //         lineHeight: 20
+                                    //     }
+                                    // },
+                                    color: (params) => {
+                                        var index = params.dataIndex;
+                                        return this.ageNum[index];
+                                    },
+                                },
+                                labelLine: {
+                                    show: false,
+                                    length: 30
+                                },
+                                data: this.ageNum
+                            }
+                        ]
+                    };
+
+                    option && myChart2.setOption(option);
+                    window.addEventListener('resize', function() {
+                        myChart2.resize();
+                    });
+                    this.myChart2 = myChart2;
+                },
+                // 数字自增
+                countUp() {
+                    // 获取所有的dom,querySelectorAll为为数组
+                    const numbers = document.querySelectorAll('.number')
+                    // console.log("🚀 ~ file: css数字从0到指定数值.html:23 ~ numbers:", numbers, numbers.length)
+                    numbers.forEach(counter => {
+                        counter.innerText = 0;
+                        const upDateNumber = () => {
+                            // 获取每个类名为number的data-target,即获取最大值 
+                            const target = Number(counter.getAttribute('data-target'))
+                            // console.log(576577644);
+                            // 获取当前div的数值
+                            const d = Number(counter.innerText)
+
+                            // 设置数据增加的值，可以通过target除的数值确定怎么加数值的快慢
+                            const increment = target / 50
+
+                            // 当数字小于最大值时，执行下面的操作
+                            if (d < target) {
+                                // 向上取整
+                                counter.innerText = `${Math.ceil(d + increment)}`
+                                // 1ms重新调用，不然它会在第一次运行完就结束
+                                setTimeout(upDateNumber, 1)
+                            } else {
+                                counter.innerText = target
+                            }
+                        }
+                        upDateNumber()
+                    })
+                },
+                //获取近几天具体日期
+                getDay(day, format) {
+                    /*
+                        day: 传数值，如0获取当天日期，-3获取3天前日期；
+                        format: 日期格式: 传"y"为年月日(2023-08-07)，不传为月日(08-07);
+                    */
+                    let today = new Date();
+                    var targetday_milliseconds = today.getTime() + 1000 * 60 * 60 * 24 * day;
+                    today.setTime(targetday_milliseconds); //注意，这行是关键代码
+                    var tYear = today.getFullYear();
+                    var tMonth = today.getMonth();
+                    var tDate = today.getDate();
+                    tMonth = this.doHandleMonth(tMonth + 1);
+                    tDate = this.doHandleMonth(tDate);
+                    if (format == "y") {
+                        return tYear + "-" + tMonth + "-" + tDate;
+                    } else {
+                        return tMonth + "-" + tDate;
+                    }
+                },
+                doHandleMonth(month) {
+                    let m = month;
+                    if (month.toString().length == 1) {
+                        m = "0" + month;
+                    }
+                    return m;
+                },
+                // 获取近几月的月份
+                getMonthFun(format) {
+                    let monthNames = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月",
+                        "12月"
+                    ];
+                    let today = new Date();
+                    let d;
+                    let month;
+                    let monthArr = [];
+
+                    for (var i = format; i > 0; i -= 1) {
+                        d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+                        month = monthNames[d.getMonth()];
+                        console.log(month);
+                        monthArr.push(month);
+                    }
+                    console.log(monthArr);
+                    return monthArr;
+                }
+            }
+        })
+    </script>
+</html>
